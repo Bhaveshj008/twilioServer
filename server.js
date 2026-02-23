@@ -15,13 +15,13 @@ app.post("/voice/incoming", (req, res) => {
     // records both legs starting when the forwarded party answers:
     record: "record-from-answer",
     // Twilio will POST here when recording is ready / completed:
-    recordingStatusCallback: "https://your-domain.com/voice/recording-status",
+    recordingStatusCallback: "https://twilio-server-weld.vercel.app/voice/recording-status",
     // pick events you care about:
     recordingStatusCallbackEvent: "completed",
   });
 
   // Forward destination (E.164 format recommended)
-  dial.number("+919876543210");
+  dial.number("+919067872194");
 
   res.type("text/xml").send(twiml.toString());
 });
