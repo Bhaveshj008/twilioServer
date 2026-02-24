@@ -10,7 +10,7 @@ app.post("/voice/incoming", (req, res) => {
   const twiml = new twilio.twiml.VoiceResponse();
 
   // Optional: short prompt so caller knows they are being recorded
-  twiml.say("This call may be recorded. Please start speaking after the beep.");
+  twiml.say("This call may be recorded");
 
   // Record the caller's audio (no forwarding)
   twiml.record({
@@ -19,10 +19,9 @@ app.post("/voice/incoming", (req, res) => {
     recordingStatusCallbackEvent: ["completed"],
 
     // Optional but useful controls:
-    playBeep: true,
-    trim: "trim-silence",      // trims leading/trailing silence
-    maxLength: 3600,           // seconds (1 hour). set what you want
-    timeout: 5,                // seconds of silence before Twilio stops recording
+    // playBeep: true,
+    // trim: "trim-silence",      // trims leading/trailing silence
+    // maxLength: 3600,           // seconds (1 hour). set what you want
     // If you want caller to press a key to finish, uncomment:
     // finishOnKey: "#",
   });
