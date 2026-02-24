@@ -20,8 +20,8 @@ app.post("/voice/incoming", (req, res) => {
     recordingStatusCallbackEvent: "completed",
   });
 
-  // Forward destination (E.164 format recommended)
-  dial.number("+919067872194");
+  // // Forward destination (E.164 format recommended)
+  // dial.number("+919067872194");
 
   res.type("text/xml").send(twiml.toString());
 });
