@@ -2,33 +2,39 @@ import express from "express";
 import twilio from "twilio";
 
 const app = express();
-// Twilio sends x-www-form-urlencoded webhooks
+
+// Twilio webhooks are x-www-form-urlencoded by default
 app.use(express.urlencoded({ extended: false }));
 
 app.post("/voice/incoming", (req, res) => {
   const twiml = new twilio.twiml.VoiceResponse();
 
-  // (Optional but common) Tell caller the call is recorded
-  twiml.say("This call may be recorded.");
+  // Optional: short prompt so caller knows they are being recorded
+  twiml.say("This call may be recorded. Please start speaking after the beep.");
 
-  const dial = twiml.dial({
-    // records both legs starting when the forwarded party answers:
-    record: "record-from-answer",
-    // Twilio will POST here when recording is ready / completed:
+  // Record the caller's audio (no forwarding)
+  twiml.record({
+    // Where Twilio will POST when recording is complete
     recordingStatusCallback: "https://twilio-server-weld.vercel.app/voice/recording-status",
-    // pick events you care about:
-    recordingStatusCallbackEvent: "completed",
+    recordingStatusCallbackEvent: ["completed"],
+
+    // Optional but useful controls:
+    playBeep: true,
+    trim: "trim-silence",      // trims leading/trailing silence
+    maxLength: 3600,           // seconds (1 hour). set what you want
+    timeout: 5,                // seconds of silence before Twilio stops recording
+    // If you want caller to press a key to finish, uncomment:
+    // finishOnKey: "#",
   });
 
-  // // Forward destination (E.164 format recommended)
-  // dial.number("+919067872194");
+  // After <Record> ends, Twilio continues. If you want to end call explicitly:
+  twiml.hangup();
 
   res.type("text/xml").send(twiml.toString());
 });
 
 app.post("/voice/recording-status", (req, res) => {
-  // Twilio will send fields like RecordingSid, RecordingUrl, CallSid, etc.
-  // Store these in DB mapped by CallSid.
+  // Fields Twilio posts (common ones)
   const {
     CallSid,
     RecordingSid,
@@ -44,6 +50,10 @@ app.post("/voice/recording-status", (req, res) => {
     RecordingStatus,
     RecordingDuration,
   });
+
+  // IMPORTANT:
+  // RecordingUrl may require auth depending on Twilio settings.
+  // Store CallSid -> RecordingSid/Url in DB for retrieval.
 
   res.sendStatus(200);
 });
