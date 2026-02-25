@@ -13,7 +13,7 @@ app.post("/voice/incoming", (req, res) => {
   // Exactly ONE <Record> => exactly ONE recording per call
   twiml.record({
     recordingStatusCallback:
-      "https://twilio-server-weld.vercel.app/voice/recording-status",
+      "https://localdesktop.ngrok.app/automate/voice/recording-status",
     recordingStatusCallbackEvent: ["completed"],
 
     // Keep it simple: no trim, no beep, no finish key
